@@ -3,49 +3,41 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-// 
-
 namespace ServerCore
 {
     class Program
     {
-        static void MainThread(object state)
+        volatile static bool _stop = false;
+        // volatile 옵션을 사용하면 컴파일러에서  해당 변수를 최적화하지 않게 됨
+
+        static void ThreadMain()
         {
-            for (int i = 0; i < 5; i++)
+            Console.WriteLine("스레드 시작~~");
+
+            while (_stop == false)
             {
-                Console.WriteLine("스레드 작동");
+                // 누군가가 stop 신호를 주기까지 대기
+                // Debug모드에서와 달리, Release모드에서는 무한루프를 돈다. 어셈블리 참조. _stop 변수에 volatile 옵션 추가.
             }
+            Console.WriteLine("스레드 종료.");
         }
+
 
         static void Main(string[] args)
         {
-            ThreadPool.SetMinThreads(1, 1);
-            ThreadPool.SetMaxThreads(5, 5);
+            Task t = new Task(ThreadMain);
+            t.Start();
 
+            Thread.Sleep(1000); // 1초 동안 슬립해  스레드가 충분히 실행될 시간 제공
 
-            for (int i = 0; i < 5; i++)
-            {
-                Task t = new Task(() => { while (true) { } }, TaskCreationOptions.LongRunning);
-                // 오래 걸리는 작업임을 명시하는 옵션. 별도의 스레드로 관리됨.
-                // LongRunning 옵션을 제외할 경우, MainThread 함수는 작동하지 않는다.
-                t.Start();
-            }
+            _stop = true;
 
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    ThreadPool.QueueUserWorkItem((obj) => { while (true) { } });
-            //}
+            Console.WriteLine("stop 호출");
+            Console.WriteLine("종료 대기중");
 
-            ThreadPool.QueueUserWorkItem(MainThread);
+            t.Wait();
 
-            //Thread t = new Thread(MainThread);
-            //t.IsBackground = true;
-            //t.Start();
-            //Console.WriteLine("스레드 조인 대기중");
-            //t.Join();
-            //Console.WriteLine("스레드 조인 완료");
-
-            while (true) { }
+            Console.WriteLine("종료 성공");
         }
     }
 }

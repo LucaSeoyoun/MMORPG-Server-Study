@@ -1,43 +1,65 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServerCore
 {
+    //메모리 배리어
+    // A) 코드 재배치 억제
+    // B) 가시성
+
+    // 1) Full Memory Barrier
+    // 2) Store Memory Barrier: Store만 막는다
+    // 3) Load Memory Barrier: Load만 막는다
+
     class Program
     {
-        volatile static bool _stop = false;
-        // volatile 옵션을 사용하면 컴파일러에서  해당 변수를 최적화하지 않게 됨
+        static volatile int x = 0;
+        static volatile int y = 0;
+        static volatile int r1 = 0;
+        static volatile int r2 = 0;
 
-        static void ThreadMain()
+        static void Thread_1()
         {
-            Console.WriteLine("스레드 시작~~");
-
-            while (_stop == false)
-            {
-                // 누군가가 stop 신호를 주기까지 대기
-                // Debug모드에서와 달리, Release모드에서는 무한루프를 돈다. 어셈블리 참조. _stop 변수에 volatile 옵션 추가.
-            }
-            Console.WriteLine("스레드 종료.");
+            y = 1; // Store y
+            // ---------------넘지마시오--------
+            //Thread.MemoryBarrier(); 
+            // 메모리 배리어의 모습. 최신 정보 판별을 위해 코드의 맨앞, 맨뒤에 두어 확실히 하기도 한다.
+            r1 = x; // Load x
         }
 
+        static void Thread_2()
+        {
+            x = 1;  // Store x
+            // ---------------넘지마시오--------
+            //Thread.MemoryBarrier();
+            r2 = y; // Load y
+        }
 
         static void Main(string[] args)
         {
-            Task t = new Task(ThreadMain);
-            t.Start();
+            int count = 0;
+            while (true)
+            {
+                count++;
+                x = y = r1 = r2 = 0;
 
-            Thread.Sleep(1000); // 1초 동안 슬립해  스레드가 충분히 실행될 시간 제공
+                Task t1 = new Task(Thread_1);
+                Task t2 = new Task(Thread_2);
 
-            _stop = true;
+                t1.Start();
+                t2.Start();
 
-            Console.WriteLine("stop 호출");
-            Console.WriteLine("종료 대기중");
+                Task.WaitAll(t1, t2);
 
-            t.Wait();
+                if (r1 ==  0 & r2 == 0) { break; }
+            }
 
-            Console.WriteLine("종료 성공");
+            Console.WriteLine($"{count}번 만에 빠져나옴!");
         }
+
     }
+
 }

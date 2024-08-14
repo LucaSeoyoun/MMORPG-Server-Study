@@ -9,13 +9,17 @@ namespace ServerCore
     class Program
     {
         static volatile int number = 0;
-
+        static object _obj = new object();
 
         static void Thread_1()
         {
             for (int i = 0; i < 100000; i++)
             {
-                Interlocked.Increment(ref number);
+                Monitor.Enter(_obj);
+                // 문 잠금. 밖에서 접근 불가.
+                // Mutual Exclusive 상호배제. 범위를 지정해 싱글스레드의 형태로 활용할 수 있음.
+                number++;
+                Monitor.Exit(_obj); // 잠금해제
             }
         }
 
@@ -23,7 +27,10 @@ namespace ServerCore
         {
             for (int i = 0; i < 100000; i++)
             {
-                Interlocked.Decrement(ref number);
+                lock (_obj) // 다른 잠금 방식.
+                {
+                    number--;
+                }
             }
         }
 
@@ -38,10 +45,6 @@ namespace ServerCore
             Task.WaitAll(t1, t2);
 
             Console.WriteLine(number);
-
-            // temp 임시변수를 거쳐 숫자를 교체할 경우, 100000씩 ++, --를 했으나  출력값은 0이 아니다.
-            // interlocked를 사용해 원자적으로 다룰 경우  예상 출력값인 0이 출력된다.
         }
-
     }
 }

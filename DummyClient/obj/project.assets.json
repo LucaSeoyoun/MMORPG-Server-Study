@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\ServerStudy\\ServerCore.csproj",
-      "projectName": "ServerCore",
-      "projectPath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\ServerStudy\\ServerCore.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\DummyClient\\DummyClient.csproj",
+      "projectName": "DummyClient",
+      "projectPath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\DummyClient\\DummyClient.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\ServerStudy\\obj\\",
+      "outputPath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\DummyClient\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",

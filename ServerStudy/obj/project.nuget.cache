@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1WzbzjYwTgO7kP9eYOfiG7a1A6pncsdexBR2ciWHJnpWO3Lx5TezelU47QTDfNrZsKDhetPJ7ZKNxVRC8GNpTg==",
+  "dgSpecHash": "n8P+mf6IpqfmD+gejbMlQrZDfcP+qDX8S/UyM3g/29U61Hc3oZTrvF4gwj8M38qkieEA/z8VAzon19drMGunww==",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\ServerStudy\\ServerStudy.csproj",
+  "projectFilePath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\ServerStudy\\ServerCore.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

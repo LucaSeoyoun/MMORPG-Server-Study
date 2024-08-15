@@ -1,45 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServerCore
 {
-    class Program
+    class ServerCore
     {
-        //TLS
-        static object _lock = new object();
-        static ThreadLocal<string> ThreadName = new ThreadLocal<string>();
-
-        //static String ThreadName으로 선언할 경우, ThreadName.Value는 모두 같은 값이 나옴.
-        //ThreadLocal<>: Thread마다 고유한 공간을 생성.
-        //한 뭉텅이씩 일을 가져와서 하는 것. 이 경우 Lock을 하지 않아도 부담 없음.
-        //전역에 접근하는 횟수를 줄이는 등의 이점이 있어 부하를 줄이는 데 도움이 됨.
-
-        static void WhoAmI()
-        {
-            ThreadName.Value = ($"{Thread.CurrentThread.ManagedThreadId}");
-
-            Thread.Sleep(1000); //1초 대기
-
-            Console.WriteLine($"Thread num.{ThreadName.Value}" +
-                $"the order is {Thread.CurrentThread.Priority}");
-        }
 
         public static void Main(string[] args)
         {
-            lock (_lock)
+            //DNS (Domain Name System)
+            string host = Dns.GetHostName();
+            IPHostEntry ipHost = Dns.GetHostEntry(host);
+            IPAddress ipAddr = ipHost.AddressList[0];
+            IPEndPoint endPoint = new IPEndPoint(ipAddr, 0127);
+
+            //문지기
+            Socket listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+
+            try
             {
-                Thread.CurrentThread.Priority = ThreadPriority.Lowest;
-                ThreadPool.QueueUserWorkItem(obj => { });
-                Console.WriteLine($"Thread num.{Thread.CurrentThread.ManagedThreadId} " +
-                    $"the order is {Thread.CurrentThread.Priority}");
+                //문지기 교육
+                listenSocket.Bind(endPoint);
+
+                //영업 시작
+                //Listen(backlog); backlog: 최대 대기수.
+                listenSocket.Listen(10);
+
+                while (true)
+                {
+                    Console.WriteLine("*** LUCA SERVER IS RUNNING ***\n\n");
+                    Console.WriteLine("Listening...");
+
+                    //손님을 입장시킨다.
+                    Socket clientSocket = listenSocket.Accept();
+                    //손님이 오지 않을 경우 무한 대기...
+
+
+                    //받는다.
+                    byte[] receiveBuff = new byte[1024];
+                    int receiveBytes = clientSocket.Receive(receiveBuff);
+                    string receiveData = Encoding.UTF8.GetString(receiveBuff, 0, receiveBytes);
+                    Console.WriteLine($"[From Client] {receiveData}");
+
+                    //보낸다.
+                    byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG server !!");
+                    clientSocket.Send(sendBuff);
+
+                    //쫓아낸다.
+                    clientSocket.Shutdown(SocketShutdown.Both);
+                    clientSocket.Close();
+
+                }
             }
 
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.ToString());
+            }
+
         }
     }
 }

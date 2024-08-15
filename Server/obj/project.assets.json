@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\ServerStudy\\ServerCore.csproj",
-      "projectName": "ServerCore",
-      "projectPath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\ServerStudy\\ServerCore.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\Server\\Server.csproj",
+      "projectName": "Server",
+      "projectPath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\Server\\Server.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\ServerStudy\\obj\\",
+      "outputPath": "C:\\Users\\user\\Desktop\\ServerStudy\\git-MMORPG-Server-Study\\Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",

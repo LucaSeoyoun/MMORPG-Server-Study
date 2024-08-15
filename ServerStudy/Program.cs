@@ -4,58 +4,43 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
-// SpinLock: 락을 획득할 때까지 무한루프를 도는 과정.
-
 namespace ServerCore
 {
-    class SpinLock
+    class Lock
     {
-        volatile int _locked = 0;
+        AutoResetEvent _available = new AutoResetEvent(true);
+        // AutoResetEvent는 문이 열려 점유한 뒤 문이 자동으로 닫히도록 되어 있음.
+        //ManualResetEvent _available = new ManualResetEvent(true);
 
         public void Acquire()
         {
-            while (true)
-            {
-                // 1: Interlocked.Exchange
-                //int original = Interlocked.Exchange(ref _locked, 1);
-                // _locked에 1을 넣어주는 것을 한번에 처리하도록 락함.
-                //if (original == 0)
-                //{
-                //    break;
-                //}
-
-
-                // 2: Interlocked.CompareExchange. Compare-And-Swap(CAS)
-                int expected = 0;
-                int desired = 1;
-                if (Interlocked.CompareExchange(ref _locked, desired, expected) == expected)
-                        break;
-                // _locked가 expected이면 desired로 바꾸는 처리를 한번에.
-
-            }
-
+            _available.WaitOne(); // 입장 시도
+            //_available.Reset(); // Reset()은 문을 닫는 작업으로써 이미 AutoResetEvent의 작업과 중복됨.
         }
 
         public void Release()
         {
-            _locked = 0;
+            _available.Set();
         }
     }
 
 
     class Program
     {
-        static SpinLock _locked = new SpinLock();
-
+        static Lock _locked = new Lock();
         static int _num = 0;
+        //static Mutex _lock = new Mutex();
+        // Mutex는 커널에서 지원해주는 것이기에 속도가 굉장히 느림.
 
         static void Thread_1()
         {
             for (int i = 0; i < 100000; i++)
             {
                 _locked.Acquire();
+                //_lock.WaitOne();
                 _num++;
                 _locked.Release();
+               // _lock.ReleaseMutex();
             }
         }
 
